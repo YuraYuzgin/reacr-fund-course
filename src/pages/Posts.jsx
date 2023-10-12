@@ -11,6 +11,7 @@ import Loader from '../components/UI/Loader/Loader';
 import { useFetching } from '../hooks/useFetching';
 import { getPageCount } from '../utils/pages';
 import Pagination from '../components/UI/pagination/Pagination';
+import { useObserver } from '../hooks/useObserver';
 
 function Posts() {
 	const [posts, setPosts] = useState([]);
@@ -31,7 +32,9 @@ function Posts() {
 		}
 	);
 
-	useEffect(() => {}, []);
+	useObserver(lastElement, page < totalPages, isPostsLoading, () => {
+		setPage(page + 1);
+	});
 
 	useEffect(() => {
 		fetchPosts(limit, page);
@@ -66,7 +69,10 @@ function Posts() {
 				posts={sortedAndSearchedPosts}
 				title={'Посты про JS'}
 			/>
-			<div style={{ height: '20px', background: 'red' }}></div>
+			<div
+				ref={lastElement}
+				style={{ height: '20px', background: 'red' }}
+			></div>
 			{isPostsLoading && (
 				<div
 					style={{
